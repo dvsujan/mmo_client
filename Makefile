@@ -371,24 +371,24 @@ clean:
 
 rmprod:
 	@printf '\n'
-	-$(_Q)rm -rf $(if $(filter osx,$(PLATFORM)),$(PRODUCTION_FOLDER_MACOS),$(PRODUCTION_FOLDER))
+	-$(_Q)rm -rf "$(if $(filter osx,$(PLATFORM)),$(PRODUCTION_FOLDER_MACOS),$(PRODUCTION_FOLDER))"
 ifeq ($(PLATFORM),linux)
 	-$(_Q)rm -rf ~/.local/share/applications/$(NAME).desktop
 endif
 .PHONY: rmprod
 
 mkdirprod:
-	$(MKDIR) $(PRODUCTION_FOLDER)
+	$(MKDIR) "$(PRODUCTION_FOLDER)"
 .PHONY: mkdirprod
 
 define do_copy_to_clean
 	@printf  '$(color_blue)$(UNI_COPY)  Copying \"$(1)\" to \"$(CURDIR)/$(2)\"\n'
-	$(shell cp -r $(1) $(2))
+	$(shell cp -r "$(1)" "$(2)")
 endef
 
 define do_copy_to
 	@printf  '$(color_blue)cp -r $(1) $(2)\n'
-	$(shell cp -r $(1) $(2))
+	$(shell cp -r "$(1)" "$(2)")
 endef
 
 define copy_to
@@ -422,7 +422,7 @@ else ifeq ($(PLATFORM),linux)
 	$(_Q)chmod +x "$(PRODUCTION_FOLDER)/$(NAME).desktop"
 	$(_Q)cp "$(PRODUCTION_FOLDER)/$(NAME).desktop" ~/.local/share/applications
 else
-	$(_Q)cp $(TARGET) $(PRODUCTION_FOLDER)
+	$(_Q)cp $(TARGET) "$(PRODUCTION_FOLDER)"
 	$(if $(_CLEAN),,@printf '\n')
 endif
 .PHONY: releasetoprod
@@ -431,7 +431,7 @@ makeproduction: rmprod mkdirprod releasetoprod
 ifneq ($(PRODUCTION_DEPENDENCIES),)
 	@printf '   $(color_blue)Adding dynamic libraries & project dependencies...\n'
 	$(foreach dep,$(PRODUCTION_DEPENDENCIES),$(call copy_to,$(dep),$(PRODUCTION_FOLDER_RESOURCES)))
-	$(foreach excl,$(PRODUCTION_EXCLUDE),$(shell find $(PRODUCTION_FOLDER_RESOURCES) -name '$(excl)' -delete))
+	$(foreach excl,$(PRODUCTION_EXCLUDE),$(shell find "$(PRODUCTION_FOLDER_RESOURCES)" -name '$(excl)' -delete))
 endif
 ifeq ($(PLATFORM),osx)
 	$(foreach dylib,$(PRODUCTION_MACOS_DYLIBS),$(call copy_to,$(dylib),$(PRODUCTION_FOLDER)/MacOS))
