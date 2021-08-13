@@ -303,20 +303,16 @@ endif
 
 #==============================================================================
 # Build Recipes
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%
-$(OBJ_DIR)/%.o: $(SRC_DIR)/% $(_PCH_GCH) $(DEP_DIR)/%.d | $(_DIRECTORIES)
+$(OBJ_DIR)/%.o: $(SRC_DIR)/% $(_PCH_GCH) | $(DEP_DIR)/%.d $(_DIRECTORIES)
 	$(call compile_with,@,<,$(OBJ_COMPILE),$(POST_COMPILE))
 
-$(OBJ_DIR)/.$(TEST_DIR)/%.o: $(TEST_DIR)/%
-$(OBJ_DIR)/.$(TEST_DIR)/%.o: $(TEST_DIR)/% $(_PCH_GCH) $(DEP_DIR)/.$(TEST_DIR)/%.d | $(_DIRECTORIES)
+$(OBJ_DIR)/.$(TEST_DIR)/%.o: $(TEST_DIR)/% $(_PCH_GCH) | $(DEP_DIR)/.$(TEST_DIR)/%.d $(_DIRECTORIES)
 	$(call compile_with,@,<,$(OBJ_COMPILE_T),$(POST_COMPILE_T))
 
-$(OBJ_DIR)/%.$(_PCH_EXT).$(_PCH_COMPILER_EXT) : $(SRC_DIR)/%.$(_PCH_EXT)
-$(OBJ_DIR)/%.$(_PCH_EXT).$(_PCH_COMPILER_EXT) : $(SRC_DIR)/%.$(_PCH_EXT) $(DEP_DIR)/%.d | $(_DIRECTORIES)
+$(OBJ_DIR)/%.$(_PCH_EXT).$(_PCH_COMPILER_EXT) : $(SRC_DIR)/%.$(_PCH_EXT) | $(DEP_DIR)/%.d $(_DIRECTORIES)
 	$(call compile_with,@,<,$(PCH_COMPILE),$(POST_COMPILE))
 
-$(OBJ_DIR)/%.res: $(SRC_DIR)/%.rc
-$(OBJ_DIR)/%.res: $(SRC_DIR)/%.rc $(DEP_DIR)/%.rc.d | $(_DIRECTORIES)
+$(OBJ_DIR)/%.res: $(SRC_DIR)/%.rc | $(DEP_DIR)/%.rc.d $(_DIRECTORIES)
 	$(call compile_with,@,<,$(RC_COMPILE),$(POST_COMPILE_RC))
 
 $(ASM_DIR)/%.o.asm: $(OBJ_DIR)/%.o
@@ -464,7 +460,7 @@ endif
 
 #==============================================================================
 # Dependency recipes
-$(DEP_DIR)/%.d: ;
 .PRECIOUS: $(DEP_DIR)/%.d
+$(DEP_DIR)/%.d: ;
 
 include $(wildcard $(DEPS))
