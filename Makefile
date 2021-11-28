@@ -408,7 +408,7 @@ ifeq ($(PLATFORM),osx)
 else ifeq ($(PLATFORM),linux)
 	$(_Q)cp $(TARGET) "$(PRODUCTION_FOLDER)"
 	$(_Q)cp "env/linux/$(PRODUCTION_LINUX_ICON).png" "$(PRODUCTION_FOLDER)/$(PRODUCTION_LINUX_ICON).png"
-	$(_Q)cp "env/linux/exec.desktop "$(PRODUCTION_FOLDER)/$(NAME).desktop"
+	$(_Q)cp "env/linux/exec.desktop" "$(PRODUCTION_FOLDER)/$(NAME).desktop"
 	$(_Q)sed -i 's/^Exec=.*/Exec=$(_LINUX_GREP_CWD)\/$(PRODUCTION_FOLDER)\/$(NAME)/' "$(PRODUCTION_FOLDER)/$(NAME).desktop"
 	$(_Q)sed -i 's/^Path=.*/Path=$(_LINUX_GREP_CWD)\/$(PRODUCTION_FOLDER)/' "$(PRODUCTION_FOLDER)/$(NAME).desktop"
 	$(_Q)sed -i 's/^Name=.*/Name=$(PRODUCTION_LINUX_APP_NAME)/' "$(PRODUCTION_FOLDER)/$(NAME).desktop"
@@ -416,7 +416,11 @@ else ifeq ($(PLATFORM),linux)
 	$(_Q)sed -i 's/^Icon=.*/Icon=$(_LINUX_GREP_CWD)\/$(PRODUCTION_FOLDER)\/$(PRODUCTION_LINUX_ICON).png/' "$(PRODUCTION_FOLDER)/$(NAME).desktop"
 	$(_Q)chmod +x "$(PRODUCTION_FOLDER)/$(NAME)"
 	$(_Q)chmod +x "$(PRODUCTION_FOLDER)/$(NAME).desktop"
+ifeq ("$(wildcard ~/.local/share/applications)", "")
+	@printf '   Applications directory does not exist, not copying desktop file.\n'
+else
 	$(_Q)cp "$(PRODUCTION_FOLDER)/$(NAME).desktop" ~/.local/share/applications
+endif
 else
 	$(_Q)cp $(TARGET) "$(PRODUCTION_FOLDER)"
 	$(if $(_CLEAN),,@printf '\n')
