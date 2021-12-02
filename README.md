@@ -2,6 +2,8 @@
 
 A cross-platform [SFML](https://www.sfml-dev.org) 2.5.1 & C++17 build environment for [Visual Studio Code](https://code.visualstudio.com/)
 
+> Note: This project will be archived soon (December 2021) and will have a new, much simpler replacement.
+
 ---
 
 ## Features
