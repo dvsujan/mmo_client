@@ -609,7 +609,7 @@ pacman -S mingw-w64-i686-toolchain mingw-w64-x86_64-toolchain mingw-w64-i686-ope
 ```
 
 5. That will install both x86 & x64 versions (so you can try both) of GCC 10.1.0 (as of 5/16/20). It may take a while, but once finished, exit msys2.
-6. Build SFML. To start with, install CMake & doxygen (64 bit version). Then download [this script](https://gist.github.com/andrew-r-king/5f8ea0eda064cbfb33f4f5d373011e0b) and edit the GCC_DIR line to either "/c/msys64/mingw64/bin" or "/c/msys64/mingw32/bin" depending on which architecture you want to target. Run the script, and if all goes well, you should have a compiled version of SFML in C:/SFML/2.5.1. You can also build from "master" instead by calling the script with that as a parameter.
+6. Build SFML. To start with, install CMake & doxygen (64 bit version). Then download [this script](https://gist.github.com/rewrking/5f8ea0eda064cbfb33f4f5d373011e0b) and edit the GCC_DIR line to either "/c/msys64/mingw64/bin" or "/c/msys64/mingw32/bin" depending on which architecture you want to target. Run the script, and if all goes well, you should have a compiled version of SFML in C:/SFML/2.5.1. You can also build from "master" instead by calling the script with that as a parameter.
 7. rename that folder so its architecture specific. For my own build, I did "C:/SFML-2.5.1-gcc-10.1.0/mingw64"
 8. Open sfml-vscode-boilerplate in VS Code, go into settings.json and comment out ".vscode/launch.json in "files.exclude", because we need to edit it. Also comment out "build.sh"
 9. Also in settings.json, go down to "terminal.integrated.env.windows" and change it to "C:/msys64/mingw64/bin;C:/SFML-2.5.1-gcc-10.1.0/mingw64/bin" (the new paths)
