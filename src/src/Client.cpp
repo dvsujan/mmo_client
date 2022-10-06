@@ -2,23 +2,29 @@
 #include "../headers/Player.hpp"
 #include <iostream>
 #include <unordered_map>
+
+/// @brief Server Packets
+/// @nothig //
+
 enum ServerPackets
 {
 	welcome = 1,
 	spawnPlayer,
 	playerPosition,
 	playerRotation,
-	serverFull
+	serverFull,
+	disconnect
 };
-
-/// <summary>Sent from client to server.</summary>
+// <summary>Sent from client to server.</summary>
 enum ClientPackets
 {
 	welcomeReceived = 1,
-	playerMovement
+	playerMovement,
+	playerShoot
 };
 
-TCPClient* client = new TCPClient();
+std::string gipaddr;
+TCPClient* client = new TCPClient(gipaddr);
 std::unordered_map<int, Player*> players;
 int myId;
 std::string myUsername;
@@ -33,8 +39,9 @@ void Client::InitializeClientData()
 {
 }
 
-TCPClient::TCPClient()
+TCPClient::TCPClient(std::string ipaddr)
 {
+	this->ip = ipaddr;
 	connected = false;
 }
 
@@ -98,11 +105,21 @@ void TCPClient::recieve()
 					ClientHandle::serverFull(packet);
 					break;
 				}
+				case ServerPackets::disconnect: {
+					ClientHandle::playerDisconnected(packet);
+					break;
+				}
 				default: {
 					std::cout << "Unknown packet type" << std::endl;
 					break;
 				}
 			}
+		}
+
+		else if (this->socket.receive(packet) == sf::Socket::Disconnected)
+		{
+			std::cout << "server connection disconnected" << std::endl;
+			exit(1);
 		}
 	}
 }
@@ -191,6 +208,13 @@ void ClientHandle::serverFull(sf::Packet packet)
 	exit(0);
 }
 
+void ClientHandle::playerDisconnected(sf::Packet packet)
+{
+	int clientId;
+	packet >> clientId;
+	players.erase(clientId);
+}
+
 void GameManager::SpwanPlayer(int id, std::string username, sf::Vector2f position)
 {
 	if (id == myId)
@@ -225,9 +249,16 @@ void GameManager::update()
 			inputs[2] = false;
 			inputs[3] = false;
 		}
+		// std::cout << "noplayers: " << x << std::endl;
 		ClientSend::sendPlayerMovement(inputs);
 		//sleep for 120 ticks
 		// sf::sleep(sf::milliseconds(1000 / 120));
+		//if mouse is pressed then send mouse coordinates to server
+		// if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+		// {
+		// 	sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
+		// 	ClientSend::sendMousePosition(mousePos);
+		// }
 	}
 }
 

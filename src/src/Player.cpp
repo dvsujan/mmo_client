@@ -16,7 +16,6 @@ Player::Player(std::string name, sf::Vector2f position)
 	this->name = name;
 	this->health = 100;
 	//
-
 	pname.setFont(font);
 	pname.setString(name);
 	pname.setCharacterSize(15);
@@ -50,6 +49,7 @@ void Player::setFont(sf::Font& font)
 
 	this->font = font;
 }
+
 void Player::setPosition(sf::Vector2f positionn)
 {
 	// std::cout << "setting Player Position" << positionn.x << " " << positionn.y << std::endl;

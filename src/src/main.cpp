@@ -1,44 +1,59 @@
-#include <SFML/Audio.hpp>
-#include <SFML/Graphics.hpp>
-#include <iostream>
-// #include "../headers/Player.hpp"
 #include "../headers/Client.hpp"
 #include "../headers/Player.hpp"
+#include <SFML/Audio.hpp>
+#include <SFML/Graphics.hpp>
 #include <SFML/System/Thread.hpp>
+#include <iostream>
 #include <string>
 #include <unordered_map>
+
 #define ticks 60
 
 int main()
 {
-
 	std::string username;
 	std::cout << "Enter Username" << std::endl;
 	std::cin >> username;
 	myUsername = username;
+	////////////////////////////////////
+	std::string ip;
+	std::cout << "Enter Ipaddress" << std::endl;
+	std::cin >> ip;
+	gipaddr = ip;
+	//////////////////////////////////////
 	sf::RenderWindow window(sf::VideoMode(800, 600), "game Window");
 	GameManager::setup();
-	window.setFramerateLimit(120);
-	//caliculate fps
-	// sf::Clock clock;
-	// sf::Time time = sf::Time::Zero;
-	// sf::Time elapsed = sf::Time::Zero;
-	// sf::Time fpsTime = sf::Time::Zero;
 	//////////////////////////////////////
+	//caliculate fps
+	sf::Clock clock;
+	clock.restart();
+	sf::Time time;
+	window.setFramerateLimit(60);
 	//run GameManager update in seperate thread
-
 	//load font
 	sf::Font font;
+
 	if (!font.loadFromFile("resources/sansation.ttf"))
 	{
 		std::cout << "error loading font" << std::endl;
 	}
-
+	sf::Text text;
+	text.setFont(font);
+	text.setCharacterSize(15);
+	text.setPosition(0, 0);
+	text.setFillColor(sf::Color::Green);
+	/// @nothig //
 	sf::Thread thread(&GameManager::update);
 	thread.launch();
 	while (window.isOpen())
 	{
-		// std::cout<< "ttesting" <<std::endl;
+		//convert time into fps
+		time = clock.getElapsedTime();
+		int fps = 1 / time.asSeconds();
+		// std::cout << "FPS: " << fps << std::endl;
+		text.setString("FPS: " + std::to_string(fps));
+		// std::cout << "Fps" << time << std::endl;
+		clock.restart();
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
@@ -67,9 +82,6 @@ int main()
 				player.second->update();
 			}
 		}
-		// for (auto& player : players)
-		// {
-		// }
 		///////////////////////////////////////////////////////
 		window.clear(sf::Color::White);
 		//render stuf
@@ -80,9 +92,9 @@ int main()
 				player.second->render(window);
 			}
 		}
+		window.draw(text);
 		window.display();
-		//run with delay
-		sf::sleep(sf::milliseconds(1000 / ticks));
 	}
+
 	return EXIT_SUCCESS;
 }

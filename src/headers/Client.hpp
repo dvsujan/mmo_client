@@ -12,10 +12,11 @@ class TCPClient;
 extern std::unordered_map<int, Player*> players;
 extern std::string myUsername;
 extern bool isFocused;
+extern std::string gipaddr;
 class TCPClient
 {
 public:
-	TCPClient();
+	TCPClient(std::string ipaddr);
 	~TCPClient();
 	void connect();
 	void disconnect();
@@ -26,7 +27,7 @@ public:
 private:
 	sf::TcpSocket socket;
 	bool connected;
-	std::string ip = "127.0.0.1";
+	std::string ip;
 	int port = 26950;
 };
 
@@ -54,6 +55,7 @@ public:
 	static void playerPosition(sf::Packet packet);
 	static void playerRotation(sf::Packet packet);
 	static void serverFull(sf::Packet packet);
+	static void playerDisconnected(sf::Packet packet);
 };
 
 class GameManager
