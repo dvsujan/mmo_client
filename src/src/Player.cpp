@@ -1,8 +1,10 @@
-#include "../headers/Player.hpp"
-#include <iostream> //
+#include "headers/Player.hpp"
+#include <iostream>
 
 Player::Player(std::string name, sf::Vector2f position)
 {
+	gun = Gun(position);
+	this->isAlive = true;
 	position = sf::Vector2f(400, 300);
 	this->f = 1;
 	// this->position = position;
@@ -11,6 +13,7 @@ Player::Player(std::string name, sf::Vector2f position)
 	rect = sf::RectangleShape();
 	healthbar = sf::RectangleShape();
 	rect.setOrigin(size.x / 2, size.y / 2);
+	this->score = 0;
 	//
 	speed = 4;
 	this->name = name;
@@ -21,6 +24,11 @@ Player::Player(std::string name, sf::Vector2f position)
 	pname.setCharacterSize(15);
 	pname.setFillColor(sf::Color::Black);
 	pname.setPosition(position.x - 45, position.y - 5);
+	//
+	scoretext.setFont(font);
+	scoretext.setString(this->name + " " + std::to_string(this->score));
+	scoretext.setCharacterSize(15);
+	scoretext.setFillColor(sf::Color::Red);
 	//
 	healthbar.setPosition(position.x, position.y);
 	healthbar.setSize(sf::Vector2f(40, 10));
@@ -86,22 +94,37 @@ void Player::update()
 		rect.setPosition(position);
 		rect.setFillColor(color);
 		pname.setPosition(position.x - 20, position.y - 50);
+		scoretext.setString(this->name + " " + std::to_string(this->score));
+		scoretext.setPosition(tpos);
 		healthbar.setPosition(position.x - 24, position.y + 30);
 		healthbar.setSize(sf::Vector2f(health / 2, 10));
 		healthBoarder.setPosition(position.x - 24, position.y + 30);
 		healthBoarder.setSize(sf::Vector2f(100 / 2, 10));
+		gun.setPosition(this->position);
+		// prevPos = position;
 		// std::cout << this->position.x << this->position.y << std::endl;
 	}
 }
 
 void Player::render(sf::RenderWindow& window)
 {
-
 	window.draw(pname);
 	window.draw(rect);
 	window.draw(pname);
 	window.draw(healthbar);
 	window.draw(healthBoarder);
+	gun.render(window);
+	if (this->me == true)
+	{
+		sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+		sf::Vector2f mousePosF(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
+		gun.follorCursor(mousePosF);
+	}
+	window.draw(scoretext);
+	// else
+	// {
+	// 	gun.followDirection(this->prevPos, this->position);
+	// }
 }
 
 void Player::damage(int amount)
@@ -125,4 +148,14 @@ bool* Player::getInputs()
 void Player::setMe()
 {
 	this->me = true;
+}
+
+void Player::setHealth(int health)
+{
+	this->health = health;
+}
+
+void Player::setScore(int score)
+{
+	this->score = score;
 }

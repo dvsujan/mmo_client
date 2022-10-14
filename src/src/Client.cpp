@@ -1,5 +1,5 @@
 #include "../headers/Client.hpp"
-#include "../headers/Player.hpp"
+// #include "../headers/Player.hpp"
 #include <iostream>
 #include <unordered_map>
 
@@ -13,6 +13,9 @@ enum ServerPackets
 	playerPosition,
 	playerRotation,
 	serverFull,
+	takeDamage,
+	killPlayer,
+	playerScore,
 	disconnect
 };
 // <summary>Sent from client to server.</summary>
@@ -29,7 +32,8 @@ std::unordered_map<int, Player*> players;
 int myId;
 std::string myUsername;
 bool isFocused = true;
-
+sf::RenderWindow window = sf::RenderWindow(sf::VideoMode(1000, 800), "game Window");
+bool isAlive = true;
 void Client::ConnectToServer()
 {
 	InitializeClientData();
@@ -105,8 +109,20 @@ void TCPClient::recieve()
 					ClientHandle::serverFull(packet);
 					break;
 				}
+				case ServerPackets::takeDamage: {
+					ClientHandle::PlayerDamage(packet);
+					break;
+				}
 				case ServerPackets::disconnect: {
 					ClientHandle::playerDisconnected(packet);
+					break;
+				}
+				case ServerPackets::killPlayer: {
+					ClientHandle::playerKill(packet);
+					break;
+				}
+				case ServerPackets::playerScore: {
+					ClientHandle::PlayerScore(packet);
 					break;
 				}
 				default: {
@@ -115,7 +131,6 @@ void TCPClient::recieve()
 				}
 			}
 		}
-
 		else if (this->socket.receive(packet) == sf::Socket::Disconnected)
 		{
 			std::cout << "server connection disconnected" << std::endl;
@@ -149,6 +164,16 @@ void ClientSend::sendPlayerMovement(bool* inputs)
 	packet << (int)inputs[3];
 	packet << 0;
 	// packet << players[myId]->getRotation();
+	client->send(packet);
+}
+
+void ClientSend::sendPlayerShoot(sf::Vector2i mousePos)
+{
+	sf::Packet packet;
+	packet << static_cast<int>(ClientPackets::playerShoot);
+	// packet << myId;
+	packet << mousePos.x;
+	packet << mousePos.y;
 	client->send(packet);
 }
 
@@ -208,6 +233,42 @@ void ClientHandle::serverFull(sf::Packet packet)
 	exit(0);
 }
 
+void ClientHandle::PlayerScore(sf::Packet packet)
+{
+	int id;
+	packet >> id;
+	int score;
+	packet >> score;
+	players[id]->setScore(score);
+}
+
+void ClientHandle::PlayerDamage(sf::Packet packet)
+{
+	int id;
+	packet >> id;
+	int health;
+	packet >> health;
+	players[id]->setHealth(health);
+}
+
+void ClientHandle::playerKill(sf::Packet packet)
+{
+	int id;
+	packet >> id;
+	std::cout << id << " died" << std::endl;
+	if (id == myId)
+	{
+		isAlive = false;
+		players.erase(myId);
+		client->disconnect();
+		exit(0);
+	}
+	else
+	{
+		players.erase(id);
+	}
+}
+
 void ClientHandle::playerDisconnected(sf::Packet packet)
 {
 	int clientId;
@@ -231,6 +292,8 @@ void GameManager::SpwanPlayer(int id, std::string username, sf::Vector2f positio
 
 void GameManager::update()
 {
+	sf::Clock clock;
+	sf::Time t;
 	while (true)
 	{
 		client->recieve();
@@ -250,15 +313,25 @@ void GameManager::update()
 			inputs[3] = false;
 		}
 		// std::cout << "noplayers: " << x << std::endl;
-		ClientSend::sendPlayerMovement(inputs);
+		if (isAlive)
+		{
+			ClientSend::sendPlayerMovement(inputs);
+		}
 		//sleep for 120 ticks
 		// sf::sleep(sf::milliseconds(1000 / 120));
-		//if mouse is pressed then send mouse coordinates to server
-		// if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
-		// {
-		// 	sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
-		// 	ClientSend::sendMousePosition(mousePos);
-		// }
+		// if mouse is pressed then send mouse coordinates to server
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && isAlive)
+		{
+			t = clock.getElapsedTime();
+			//if elapse time is greater than 0.1 then send mouse coordinates
+			if (t.asSeconds() > 0.5)
+			{
+				clock.restart();
+				sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+				// std::cout << "mouse Presed:  " << mousePos.x << " " << mousePos.y << std::endl;
+				ClientSend::sendPlayerShoot(mousePos);
+			}
+		}
 	}
 }
 
@@ -269,11 +342,6 @@ void GameManager::SetPlayerPosition(int id, sf::Vector2f position)
 		players[id]->setPosition(position);
 	}
 }
-
-// std::unordered_map<int, Player*> GameManager::getPlayers()
-// {
-// 	return players;
-// }
 
 void GameManager::setup()
 {

@@ -13,6 +13,7 @@ extern std::unordered_map<int, Player*> players;
 extern std::string myUsername;
 extern bool isFocused;
 extern std::string gipaddr;
+extern sf::RenderWindow window;
 class TCPClient
 {
 public:
@@ -45,6 +46,7 @@ public:
 	void sendTCPData(sf::Packet packet);
 	static void sendWelcome();
 	static void sendPlayerMovement(bool* inputs);
+	static void sendPlayerShoot(sf::Vector2i mousePos);
 };
 
 class ClientHandle
@@ -55,7 +57,10 @@ public:
 	static void playerPosition(sf::Packet packet);
 	static void playerRotation(sf::Packet packet);
 	static void serverFull(sf::Packet packet);
+	static void PlayerDamage(sf::Packet packet);
 	static void playerDisconnected(sf::Packet packet);
+	static void PlayerScore(sf::Packet packet);
+	static void playerKill(sf::Packet packet);
 };
 
 class GameManager
