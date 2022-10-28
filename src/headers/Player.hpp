@@ -31,7 +31,7 @@ public:
 	bool isAlive;
 	sf::Vector2f position;
 	bool me = false;
-	Player(std::string name, sf ::Vector2f position);
+	Player(std::string name, sf ::Vector2f position, int health, int score);
 	void setSpeed(float speed)
 	{
 		this->speed = speed;
@@ -47,7 +47,6 @@ public:
 	void render(sf::RenderWindow& window);
 	void setRotation(float angle);
 	bool* getInputs();
-	// float getRotation();
 	void setTextPosition(sf::Vector2f tpos)
 	{
 		this->tpos = tpos;

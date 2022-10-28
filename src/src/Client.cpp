@@ -197,10 +197,14 @@ void ClientHandle::spwanPlayer(sf::Packet packet)
 	// std::cout << "spwaned player " << idx << std::endl;
 	std::string username;
 	packet >> username;
-	int X, Y;
+	int X, Y, rotation;
+	int health, score;
 	packet >> X;
 	packet >> Y;
-	GameManager::SpwanPlayer(idx, username, sf::Vector2f(X, Y));
+	packet >> rotation;
+	packet >> health;
+	packet >> score;
+	GameManager::SpwanPlayer(idx, username, sf::Vector2f(X, Y), health, score);
 }
 
 void ClientHandle::playerPosition(sf::Packet packet)
@@ -276,16 +280,16 @@ void ClientHandle::playerDisconnected(sf::Packet packet)
 	players.erase(clientId);
 }
 
-void GameManager::SpwanPlayer(int id, std::string username, sf::Vector2f position)
+void GameManager::SpwanPlayer(int id, std::string username, sf::Vector2f position, int health, int score)
 {
 	if (id == myId)
 	{
-		players[id] = new Player(username, position);
+		players[id] = new Player(username, position, health, score);
 		players[id]->setMe();
 	}
 	else
 	{
-		players[id] = new Player(username, position);
+		players[id] = new Player(username, position, health, score);
 	}
 	players[id]->setup();
 }

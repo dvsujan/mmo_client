@@ -1,7 +1,7 @@
 #include "headers/Player.hpp"
 #include <iostream>
 
-Player::Player(std::string name, sf::Vector2f position)
+Player::Player(std::string name, sf::Vector2f position, int health, int score)
 {
 	gun = Gun(position);
 	this->isAlive = true;
@@ -13,11 +13,11 @@ Player::Player(std::string name, sf::Vector2f position)
 	rect = sf::RectangleShape();
 	healthbar = sf::RectangleShape();
 	rect.setOrigin(size.x / 2, size.y / 2);
-	this->score = 0;
 	//
 	speed = 4;
 	this->name = name;
-	this->health = 100;
+	this->health = health;
+	this->score = score;
 	//
 	pname.setFont(font);
 	pname.setString(name);

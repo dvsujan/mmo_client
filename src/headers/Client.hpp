@@ -66,7 +66,7 @@ public:
 class GameManager
 {
 public:
-	static void SpwanPlayer(int id, std::string username, sf::Vector2f position);
+	static void SpwanPlayer(int id, std::string username, sf::Vector2f position, int health, int score);
 	static void update();
 	static std::unordered_map<int, Player*> getPlayers();
 	static void setup();

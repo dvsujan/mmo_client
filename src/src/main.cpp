@@ -16,13 +16,20 @@ int main(int argc, char** argv)
 	// std::cin >> username;
 	srand(time(0));
 	std::cout << argc << std::endl;
-
-	myUsername = argv[1];
+	if (argc > 2)
+	{
+		myUsername = argv[1];
+		gipaddr = argv[2];
+	}
+	else
+	{
+		myUsername = "Player " + std::to_string(rand() % 1000);
+		gipaddr = "loacalhost";
+	}
 	////////////////////////////////////
 	// std::string ip;
 	// std::cout << "Enter Ipaddress" << std::endl;
 	// std::cin >> ip;
-	gipaddr = argv[2];
 	//////////////////////////////////////
 	// sf::RenderWindow window(sf::VideoMode(800, 600), "game Window");
 	// sf::RenderWindow window = sf::RenderWindow(sf::VideoMode(800, 600), "game Window");
